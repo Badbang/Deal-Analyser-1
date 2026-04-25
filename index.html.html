@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BTL Deal Analyser</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface2: #f0efe9;
+    --border: rgba(0,0,0,0.1);
+    --border-strong: rgba(0,0,0,0.18);
+    --text: #1a1a18;
+    --text2: #6b6b67;
+    --text3: #9a9a96;
+    --green: #0d6b50;
+    --green-bg: #e4f4ed;
+    --amber: #9a6200;
+    --amber-bg: #fef3db;
+    --red: #943020;
+    --red-bg: #fdecea;
+    --accent: #1a1a18;
+    --radius: 10px;
+    --radius-lg: 14px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141412;
+      --surface: #1e1e1b;
+      --surface2: #282825;
+      --border: rgba(255,255,255,0.08);
+      --border-strong: rgba(255,255,255,0.15);
+      --text: #f0efe8;
+      --text2: #9a9a96;
+      --text3: #666662;
+      --green: #3dba8c;
+      --green-bg: #0d3326;
+      --amber: #f0a830;
+      --amber-bg: #2e2000;
+      --red: #e06050;
+      --red-bg: #2e1010;
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  header {
+    background: var(--accent);
+    color: #fff;
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  header h1 { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+  header span { font-size: 12px; opacity: .5; }
+
+  .container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  .card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .card-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 1.1rem;
+  }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+  @media (max-width: 600px) {
+    .grid2, .grid3, .grid4 { grid-template-columns: 1fr 1fr; }
+  }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 12px; color: var(--text2); }
+  .field input {
+    background: var(--surface2);
+    border: 0.5px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 14px;
+    color: var(--text);
+    font-family: inherit;
+    outline: none;
+    width: 100%;
+    transition: border-color .15s;
+  }
+  .field input:focus { border-color: var(--accent); }
+
+  .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.25rem; }
+  @media (max-width: 600px) { .metric-grid { grid-template-columns: 1fr 1fr; } }
+
+  .metric {
+    background: var(--surface2);
+    border-radius: var(--radius);
+    padding: .9rem 1rem;
+  }
+  .metric-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+  .metric-value { font-size: 20px; font-weight: 600; color: var(--text); }
+  .metric-value.pos { color: var(--green); }
+  .metric-value.neg { color: var(--red); }
+  .metric-value.warn { color: var(--amber); }
+
+  .unit-header {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 1fr;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .unit-header span { font-size: 11px; color: var(--text3); }
+  .unit-row {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 1fr;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .unit-row .unit-label { font-size: 13px; color: var(--text2); }
+
+  .btn-group { display: flex; gap: 8px; margin-top: 4px; }
+  button {
+    background: var(--surface2);
+    border: 0.5px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .15s;
+  }
+  button:hover { background: var(--border); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table td { padding: 6px 4px; border-bottom: 0.5px solid var(--border); color: var(--text); }
+  table tr:last-child td { border-bottom: none; font-weight: 600; }
+  table td:last-child { text-align: right; }
+
+  .chart-wrap { position: relative; width: 100%; height: 220px; }
+
+  .scorecard { display: flex; flex-direction: column; gap: 8px; }
+  .score-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .score-item.pos { background: var(--green-bg); color: var(--green); }
+  .score-item.neg { background: var(--red-bg); color: var(--red); }
+  .score-item.warn { background: var(--amber-bg); color: var(--amber); }
+  .score-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: currentColor; }
+
+  .prop-input {
+    background: var(--surface2);
+    border: 0.5px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 14px;
+    color: var(--text);
+    font-family: inherit;
+    outline: none;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+  .prop-input:focus { border-color: var(--accent); }
+
+  footer { text-align: center; font-size: 12px; color: var(--text3); padding: 2rem 0 1rem; }
+
+  .divider { border: none; border-top: 0.5px solid var(--border); margin: 1.25rem 0; }
+
+  .summary-bar {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .sum-item { display: flex; flex-direction: column; }
+  .sum-label { font-size: 11px; color: var(--text3); }
+  .sum-val { font-size: 16px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>BTL Deal Analyser</h1>
+  <span>Buy-to-let property calculator · South Africa</span>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <div class="card-title">Property</div>
+    <input class="prop-input" type="text" id="propName" placeholder="Property address or name (e.g. 18 SS Namutoni, 158m²)">
+    <div class="grid3">
+      <div class="field"><label>Purchase price (R)</label><input type="number" id="price" value="1000000"></div>
+      <div class="field"><label>Market value (R)</label><input type="number" id="mktval" value="1200000"></div>
+      <div class="field"><label>Deposit (R)</label><input type="number" id="deposit" value="200000"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Bond</div>
+    <div class="grid3">
+      <div class="field"><label>Bond LTV (%)</label><input type="number" id="ltv" value="92" step="0.5"></div>
+      <div class="field"><label>Interest rate — prime (%)</label><input type="number" id="rate" value="11.75" step="0.25"></div>
+      <div class="field"><label>Bond term (years)</label><input type="number" id="term" value="30"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Acquisition costs</div>
+    <div class="grid3">
+      <div class="field"><label>Transfer costs (R)</label><input type="number" id="transfer" value="69929"></div>
+      <div class="field"><label>Sourcing fee (R)</label><input type="number" id="sourcing" value="0"></div>
+      <div class="field"><label>Renovation (R)</label><input type="number" id="reno" value="30000"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Rental income</div>
+    <div class="unit-header">
+      <span>Unit</span><span>Rent per unit (R)</span><span>Units</span>
+    </div>
+    <div id="units-wrap"></div>
+    <div class="btn-group">
+      <button onclick="addUnit()">+ Add unit</button>
+      <button onclick="removeUnit()">− Remove unit</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Monthly expenses</div>
+    <div class="grid3">
+      <div class="field"><label>Rates &amp; taxes (R)</label><input type="number" id="rates" value="647"></div>
+      <div class="field"><label>Sewage (R)</label><input type="number" id="sewage" value="704"></div>
+      <div class="field"><label>Water (R)</label><input type="number" id="water" value="474"></div>
+      <div class="field"><label>Electricity (R)</label><input type="number" id="elec" value="1000"></div>
+      <div class="field"><label>Refuse (R)</label><input type="number" id="refuse" value="353"></div>
+      <div class="field"><label>Levies (R)</label><input type="number" id="levies" value="1600"></div>
+      <div class="field"><label>Reserve fund levy (R)</label><input type="number" id="reserve" value="150"></div>
+      <div class="field"><label>CSOS levy (R)</label><input type="number" id="csos" value="20"></div>
+      <div class="field"><label>Special levy (R)</label><input type="number" id="special" value="0"></div>
+      <div class="field"><label>Accounting fees (R)</label><input type="number" id="acct" value="750"></div>
+      <div class="field"><label>Management fee (% of rent)</label><input type="number" id="mgmtpct" value="10" step="0.5"></div>
+      <div class="field"><label>Vacancy (% of rent)</label><input type="number" id="voidpct" value="5" step="0.5"></div>
+      <div class="field"><label>Maintenance (% of rent)</label><input type="number" id="maintpct" value="5" step="0.5"></div>
+      <div class="field"><label>Other fixed expenses (R)</label><input type="number" id="other" value="0"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Results</div>
+
+    <div class="metric-grid" id="metrics"></div>
+
+    <hr class="divider">
+
+    <div class="two-col">
+      <div>
+        <p style="font-size:12px;color:var(--text3);margin-bottom:10px">Expense breakdown</p>
+        <table id="exp-table"></table>
+      </div>
+      <div>
+        <p style="font-size:12px;color:var(--text3);margin-bottom:10px">Income vs expenses (R/month)</p>
+        <div class="chart-wrap">
+          <canvas id="barChart" role="img" aria-label="Bar chart comparing monthly gross rent to total monthly expenses"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <p style="font-size:12px;color:var(--text3);margin-bottom:10px">Deal scorecard</p>
+    <div class="scorecard" id="scorecard"></div>
+  </div>
+
+</div>
+
+<footer>Built for property investors · All calculations are estimates and do not constitute financial advice.</footer>
+
+<script>
+let unitCount = 1;
+let barChart;
+
+function initUnits() {
+  const w = document.getElementById('units-wrap');
+  const existing = [];
+  for (let i = 0; i < unitCount; i++) {
+    existing.push({
+      rent: parseFloat(document.getElementById('rent' + i)?.value) || (i === 0 ? 15000 : 0),
+      qty: parseFloat(document.getElementById('qty' + i)?.value) || 1
+    });
+  }
+  w.innerHTML = '';
+  for (let i = 0; i < unitCount; i++) {
+    const r = existing[i] || { rent: 0, qty: 1 };
+    const row = document.createElement('div');
+    row.className = 'unit-row';
+    row.innerHTML = `
+      <span class="unit-label">Unit ${i + 1}</span>
+      <div class="field" style="margin:0"><input type="number" id="rent${i}" value="${r.rent}" oninput="calc()" placeholder="0"></div>
+      <div class="field" style="margin:0"><input type="number" id="qty${i}" value="${r.qty}" min="1" oninput="calc()"></div>
+    `;
+    w.appendChild(row);
+  }
+  calc();
+}
+
+function addUnit() { unitCount = Math.min(unitCount + 1, 12); initUnits(); }
+function removeUnit() { unitCount = Math.max(unitCount - 1, 1); initUnits(); }
+
+function v(id) { return parseFloat(document.getElementById(id)?.value) || 0; }
+
+function fmt(n) { return 'R\u00a0' + Math.round(n).toLocaleString('en-ZA'); }
+
+function bondPayment(principal, annualRate, years) {
+  const r = annualRate / 100 / 12, n = years * 12;
+  if (r === 0) return principal / n;
+  return principal * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+}
+
+function calc() {
+  const price = v('price'), mktval = v('mktval'), deposit = v('deposit');
+  const ltv = v('ltv') / 100, rate = v('rate'), term = v('term');
+  const transfer = v('transfer'), sourcing = v('sourcing'), reno = v('reno');
+  const bondAmt = price * ltv;
+  const totalBuying = transfer + sourcing + reno;
+  const capRequired = deposit + totalBuying;
+
+  let grossRent = 0;
+  for (let i = 0; i < unitCount; i++) {
+    grossRent += (parseFloat(document.getElementById('rent' + i)?.value) || 0) *
+                 (parseFloat(document.getElementById('qty' + i)?.value) || 0);
+  }
+
+  const mgmt = grossRent * v('mgmtpct') / 100;
+  const voids = grossRent * v('voidpct') / 100;
+  const maint = grossRent * v('maintpct') / 100;
+  const bond = bondPayment(bondAmt, rate, term);
+
+  const fixedExp = v('rates') + v('sewage') + v('water') + v('elec') + v('refuse') +
+                   v('levies') + v('reserve') + v('csos') + v('special') + v('acct') + v('other');
+  const totalExp = fixedExp + mgmt + voids + maint + bond;
+
+  const profit = grossRent - totalExp;
+  const roi = capRequired > 0 ? (profit * 12 / capRequired) * 100 : 0;
+  const grossYield = price > 0 ? (grossRent * 12 / price) * 100 : 0;
+  const netYield = price > 0 ? ((grossRent - fixedExp - mgmt - voids - maint) * 12 / price) * 100 : 0;
+  const equity = mktval - bondAmt;
+  const dscr = bond > 0 ? grossRent / bond : 0;
+
+  const pc = v => v > 0 ? 'pos' : v < 0 ? 'neg' : 'warn';
+
+  document.getElementById('metrics').innerHTML = `
+    <div class="metric"><div class="metric-label">Monthly cashflow</div><div class="metric-value ${pc(profit)}">${fmt(profit)}</div></div>
+    <div class="metric"><div class="metric-label">Annual ROI on capital</div><div class="metric-value ${roi>=8?'pos':roi>=4?'warn':'neg'}">${roi.toFixed(2)}%</div></div>
+    <div class="metric"><div class="metric-label">Gross yield</div><div class="metric-value ${grossYield>=10?'pos':grossYield>=7?'warn':'neg'}">${grossYield.toFixed(2)}%</div></div>
+    <div class="metric"><div class="metric-label">DSCR</div><div class="metric-value ${dscr>=1.2?'pos':dscr>=1?'warn':'neg'}">${dscr.toFixed(2)}x</div></div>
+    <div class="metric"><div class="metric-label">Net yield</div><div class="metric-value ${netYield>=8?'pos':netYield>=5?'warn':'neg'}">${netYield.toFixed(2)}%</div></div>
+    <div class="metric"><div class="metric-label">Bond payment</div><div class="metric-value">${fmt(bond)}</div></div>
+    <div class="metric"><div class="metric-label">Capital required</div><div class="metric-value">${fmt(capRequired)}</div></div>
+    <div class="metric"><div class="metric-label">Equity in deal</div><div class="metric-value">${fmt(equity)}</div></div>
+  `;
+
+  document.getElementById('exp-table').innerHTML = `
+    <tr><td>Bond repayment</td><td>${fmt(bond)}</td></tr>
+    <tr><td>Rates &amp; taxes</td><td>${fmt(v('rates'))}</td></tr>
+    <tr><td>Sewage</td><td>${fmt(v('sewage'))}</td></tr>
+    <tr><td>Water</td><td>${fmt(v('water'))}</td></tr>
+    <tr><td>Electricity</td><td>${fmt(v('elec'))}</td></tr>
+    <tr><td>Refuse</td><td>${fmt(v('refuse'))}</td></tr>
+    <tr><td>Levies</td><td>${fmt(v('levies'))}</td></tr>
+    <tr><td>Reserve fund</td><td>${fmt(v('reserve'))}</td></tr>
+    <tr><td>CSOS levy</td><td>${fmt(v('csos'))}</td></tr>
+    <tr><td>Management (${v('mgmtpct')}%)</td><td>${fmt(mgmt)}</td></tr>
+    <tr><td>Vacancy (${v('voidpct')}%)</td><td>${fmt(voids)}</td></tr>
+    <tr><td>Maintenance (${v('maintpct')}%)</td><td>${fmt(maint)}</td></tr>
+    <tr><td>Accounting</td><td>${fmt(v('acct'))}</td></tr>
+    ${v('other') > 0 ? `<tr><td>Other</td><td>${fmt(v('other'))}</td></tr>` : ''}
+    <tr><td>Total expenses</td><td>${fmt(totalExp)}</td></tr>
+  `;
+
+  updateChart(grossRent, totalExp);
+
+  const scores = [
+    profit > 0
+      ? { cls: 'pos', txt: `Cashflow positive — ${fmt(profit)}/month surplus` }
+      : { cls: 'neg', txt: `Cashflow negative — ${fmt(Math.abs(profit))}/month top-up needed` },
+    grossYield >= 10
+      ? { cls: 'pos', txt: `Gross yield ${grossYield.toFixed(1)}% — strong (target ≥10%)` }
+      : grossYield >= 7
+      ? { cls: 'warn', txt: `Gross yield ${grossYield.toFixed(1)}% — acceptable, push for higher rent` }
+      : { cls: 'neg', txt: `Gross yield ${grossYield.toFixed(1)}% — low for SA BTL (target ≥10%)` },
+    dscr >= 1.2
+      ? { cls: 'pos', txt: `DSCR ${dscr.toFixed(2)}x — rent covers bond comfortably` }
+      : dscr >= 1
+      ? { cls: 'warn', txt: `DSCR ${dscr.toFixed(2)}x — rent barely covers bond, very tight` }
+      : { cls: 'neg', txt: `DSCR ${dscr.toFixed(2)}x — rent does not cover bond repayment` },
+    roi >= 8
+      ? { cls: 'pos', txt: `Annual ROI ${roi.toFixed(1)}% on R${Math.round(capRequired).toLocaleString('en-ZA')} capital deployed` }
+      : roi >= 4
+      ? { cls: 'warn', txt: `Annual ROI ${roi.toFixed(1)}% — moderate; renegotiate price or increase rent` }
+      : { cls: 'neg', txt: `Annual ROI ${roi.toFixed(1)}% — poor return on capital` },
+    equity > 0
+      ? { cls: 'pos', txt: `R${Math.round(equity).toLocaleString('en-ZA')} equity in deal (market value vs bond)` }
+      : { cls: 'neg', txt: `No equity — bond amount exceeds market value` }
+  ];
+
+  document.getElementById('scorecard').innerHTML = scores.map(s =>
+    `<div class="score-item ${s.cls}"><span class="score-dot"></span>${s.txt}</div>`
+  ).join('');
+}
+
+function updateChart(income, expenses) {
+  const ctx = document.getElementById('barChart').getContext('2d');
+  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const data = {
+    labels: ['Gross rent', 'Total expenses'],
+    datasets: [{
+      data: [Math.round(income), Math.round(expenses)],
+      backgroundColor: isDark ? ['#1D9E75','#D85A30'] : ['#0d6b50','#943020'],
+      borderRadius: 6
+    }]
+  };
+  if (barChart) { barChart.data = data; barChart.update(); return; }
+  barChart = new Chart(ctx, {
+    type: 'bar',
+    data,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => 'R\u00a0' + c.raw.toLocaleString('en-ZA') } }
+      },
+      scales: {
+        y: {
+          ticks: { callback: v => 'R ' + Math.round(v / 1000) + 'k', font: { size: 11 } },
+          grid: { color: isDark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.05)' }
+        },
+        x: { ticks: { font: { size: 12 } }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+document.querySelectorAll('input[type="number"]').forEach(el => el.addEventListener('input', calc));
+initUnits();
+</script>
+</body>
+</html>
