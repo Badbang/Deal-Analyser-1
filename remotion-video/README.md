@@ -11,6 +11,34 @@
 
 Welcome to your Remotion project!
 
+## Structure for YouTube editing
+
+Remotion here is used as a templated graphics/overlay layer (intros, lower-thirds,
+caption burn-ins) rather than a raw-footage editor — cut and assemble raw footage in
+a normal editor, then use these templates for anything repeated across videos.
+
+```
+src/
+  compositions/   # one file per reusable template (registered in Root.tsx)
+  components/     # small reusable pieces used by compositions
+  data/           # per-video JSON (captions, titles) passed in via --props
+  Root.tsx        # registers every composition
+public/           # logos, fonts, music
+```
+
+Two starter templates are included:
+
+- **Intro** — a title card with title/subtitle/colors as props.
+- **CaptionOverlay** — burns in timed captions from a `{ captions: [{ text, start, end }] }`
+  JSON file; the clip's length is derived automatically from the last caption's `end` time.
+
+To make a new video from a template, copy `src/data/example-captions.json`, edit it,
+and render with that file's props:
+
+```console
+npx remotion render CaptionOverlay out/my-video.mp4 --props=src/data/my-video.json
+```
+
 ## Commands
 
 **Install Dependencies**
