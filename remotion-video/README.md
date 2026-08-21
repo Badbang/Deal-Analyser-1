@@ -36,9 +36,22 @@ Starter templates included:
   with fade transitions between scenes (via `@remotion/transitions`), so a full video
   comes out of a single render call. Its duration is derived automatically too.
 
-To make a new video, copy `src/data/example-captions.json`, edit the captions, and
-render `MasterVideo` with a props file containing `introTitle`, `introSubtitle`,
-`accentColor`, `backgroundColor`, `captions`, `outroTitle`, and `outroSubtitle`:
+## Using an existing .srt transcript
+
+If you already have a `.srt` subtitle file (exported from YouTube, Whisper, an
+editor, etc.), convert it straight to the captions JSON format instead of typing
+captions by hand:
+
+```console
+npm run captions:from-srt -- path/to/your-file.srt src/data/my-video.json
+```
+
+That writes `src/data/my-video.json` with a `captions` array your video is ready to use.
+
+To make a new video, copy `src/data/example-captions.json` (or use the SRT
+converter above), edit the captions, and render `MasterVideo` with a props file
+containing `introTitle`, `introSubtitle`, `accentColor`, `backgroundColor`,
+`captions`, `outroTitle`, and `outroSubtitle`:
 
 ```console
 npx remotion render MasterVideo out/my-video.mp4 --props=src/data/my-video.json
