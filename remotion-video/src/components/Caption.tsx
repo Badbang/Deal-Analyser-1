@@ -8,12 +8,19 @@ export const Caption: React.FC<{ text: string; durationInFrames: number }> = ({
 }) => {
   const frame = useCurrentFrame();
 
-  const opacity = interpolate(
-    frame,
-    [0, FADE_FRAMES, durationInFrames - FADE_FRAMES, durationInFrames],
-    [0, 1, 1, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-  );
+  // Scale the fade down for very short cues so the interpolate breakpoints
+  // stay strictly increasing (0 < fade < durationInFrames - fade).
+  const fade = Math.min(FADE_FRAMES, Math.floor(durationInFrames / 3));
+
+  const opacity =
+    fade <= 0
+      ? 1
+      : interpolate(
+          frame,
+          [0, fade, durationInFrames - fade, durationInFrames],
+          [0, 1, 1, 0],
+          { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+        );
 
   return (
     <div
