@@ -8,6 +8,12 @@ import {
   captionOverlaySchema,
 } from "./compositions/CaptionOverlay";
 import { Intro, introSchema } from "./compositions/Intro";
+import { Outro, outroSchema } from "./compositions/Outro";
+import {
+  MasterVideo,
+  calculateMasterVideoMetadata,
+  masterVideoSchema,
+} from "./compositions/MasterVideo";
 import { CoffeeFloat } from "./compositions/CoffeeFloat";
 import exampleCaptions from "./data/example-captions.json";
 
@@ -31,6 +37,44 @@ export const RemotionRoot: React.FC = () => {
           accentColor: "#86A8E7",
           backgroundColor: "#141412",
         }}
+      />
+
+      <Composition
+        id="Outro"
+        component={Outro}
+        durationInFrames={90}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={outroSchema}
+        defaultProps={{
+          title: "Thanks for Watching!",
+          subtitle: "Subscribe for more like this",
+          accentColor: "#86A8E7",
+          backgroundColor: "#141412",
+        }}
+      />
+
+      <Composition
+        id="MasterVideo"
+        component={MasterVideo}
+        // Placeholder value: calculateMetadata below sets the real duration
+        // from Intro + captions + Outro, minus the transition overlaps.
+        durationInFrames={240}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={masterVideoSchema}
+        defaultProps={{
+          introTitle: "Deal Breakdown",
+          introSubtitle: "Is this property worth it?",
+          accentColor: "#86A8E7",
+          backgroundColor: "#141412",
+          captions: exampleCaptions.captions,
+          outroTitle: "Thanks for Watching!",
+          outroSubtitle: "Subscribe for more like this",
+        }}
+        calculateMetadata={calculateMasterVideoMetadata}
       />
 
       <Composition

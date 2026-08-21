@@ -26,18 +26,26 @@ src/
 public/           # logos, fonts, music
 ```
 
-Two starter templates are included:
+Starter templates included:
 
 - **Intro** — a title card with title/subtitle/colors as props.
+- **Outro** — a closing card (same shape as Intro, different copy).
 - **CaptionOverlay** — burns in timed captions from a `{ captions: [{ text, start, end }] }`
   JSON file; the clip's length is derived automatically from the last caption's `end` time.
+- **MasterVideo** — stitches Intro → CaptionOverlay → Outro into one continuous render
+  with fade transitions between scenes (via `@remotion/transitions`), so a full video
+  comes out of a single render call. Its duration is derived automatically too.
 
-To make a new video from a template, copy `src/data/example-captions.json`, edit it,
-and render with that file's props:
+To make a new video, copy `src/data/example-captions.json`, edit the captions, and
+render `MasterVideo` with a props file containing `introTitle`, `introSubtitle`,
+`accentColor`, `backgroundColor`, `captions`, `outroTitle`, and `outroSubtitle`:
 
 ```console
-npx remotion render CaptionOverlay out/my-video.mp4 --props=src/data/my-video.json
+npx remotion render MasterVideo out/my-video.mp4 --props=src/data/my-video.json
 ```
+
+Individual templates (`Intro`, `Outro`, `CaptionOverlay`) can still be rendered on
+their own the same way, if you just want one piece rather than the full pipeline.
 
 ## Commands
 
