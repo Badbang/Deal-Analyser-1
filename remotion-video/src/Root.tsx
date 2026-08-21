@@ -15,6 +15,7 @@ import {
   masterVideoSchema,
 } from "./compositions/MasterVideo";
 import { CoffeeFloat } from "./compositions/CoffeeFloat";
+import { ReasonCardDemo, reasonCardDemoSchema } from "./compositions/ReasonCardDemo";
 import exampleCaptions from "./data/example-captions.json";
 
 // Each <Composition> is an entry in the sidebar!
@@ -75,6 +76,22 @@ export const RemotionRoot: React.FC = () => {
           outroSubtitle: "Subscribe for more like this",
         }}
         calculateMetadata={calculateMasterVideoMetadata}
+      />
+
+      <Composition
+        id="ReasonCardDemo"
+        component={ReasonCardDemo}
+        durationInFrames={60}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={reasonCardDemoSchema}
+        defaultProps={{
+          number: 1,
+          icon: "🔒",
+          label: "They See Your Past, Not Your Future",
+          previewBackground: "#141412",
+        }}
       />
 
       <Composition

@@ -20,6 +20,7 @@ export const masterVideoSchema = z.object({
   accentColor: zColor(),
   backgroundColor: zColor(),
   captions: captionOverlaySchema.shape.captions,
+  reasons: captionOverlaySchema.shape.reasons,
   outroTitle: z.string(),
   outroSubtitle: z.string(),
 });
@@ -34,7 +35,7 @@ export const calculateMasterVideoMetadata = ({
 }) => {
   const fps = 30;
   const captionDuration = calculateCaptionOverlayMetadata({
-    props: { captions: props.captions },
+    props: { captions: props.captions, reasons: props.reasons },
   }).durationInFrames;
 
   return {
@@ -50,11 +51,12 @@ export const MasterVideo: React.FC<z.infer<typeof masterVideoSchema>> = ({
   accentColor,
   backgroundColor,
   captions,
+  reasons,
   outroTitle,
   outroSubtitle,
 }) => {
   const captionDuration = calculateCaptionOverlayMetadata({
-    props: { captions },
+    props: { captions, reasons },
   }).durationInFrames;
 
   return (
@@ -74,7 +76,7 @@ export const MasterVideo: React.FC<z.infer<typeof masterVideoSchema>> = ({
       />
 
       <TransitionSeries.Sequence durationInFrames={captionDuration}>
-        <CaptionOverlay captions={captions} />
+        <CaptionOverlay captions={captions} reasons={reasons} backgroundColor={backgroundColor} />
       </TransitionSeries.Sequence>
 
       <TransitionSeries.Transition
