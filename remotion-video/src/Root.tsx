@@ -8,6 +8,7 @@ import {
   captionOverlaySchema,
 } from "./compositions/CaptionOverlay";
 import { Intro, introSchema } from "./compositions/Intro";
+import { CoffeeFloat } from "./compositions/CoffeeFloat";
 import exampleCaptions from "./data/example-captions.json";
 
 // Each <Composition> is an entry in the sidebar!
@@ -30,6 +31,15 @@ export const RemotionRoot: React.FC = () => {
           accentColor: "#86A8E7",
           backgroundColor: "#141412",
         }}
+      />
+
+      <Composition
+        id="CoffeeFloat"
+        component={CoffeeFloat}
+        durationInFrames={180}
+        fps={30}
+        width={1920}
+        height={1080}
       />
 
       <Composition
