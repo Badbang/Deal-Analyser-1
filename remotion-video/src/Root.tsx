@@ -17,6 +17,9 @@ import {
 import { CoffeeFloat } from "./compositions/CoffeeFloat";
 import { ReasonCardDemo, reasonCardDemoSchema } from "./compositions/ReasonCardDemo";
 import { Scenes, calculateScenesMetadata, defaultScenesProps } from "./compositions/Scenes";
+import { SplitScreenDemo } from "./compositions/SplitScreenDemo";
+import { PipelineDiagramDemo } from "./compositions/PipelineDiagramDemo";
+import { GateCardsDemo } from "./compositions/GateCardsDemo";
 import exampleCaptions from "./data/example-captions.json";
 
 // Each <Composition> is an entry in the sidebar!
@@ -90,6 +93,38 @@ export const RemotionRoot: React.FC = () => {
         height={1080}
         defaultProps={defaultScenesProps}
         calculateMetadata={calculateScenesMetadata}
+      />
+
+      <Composition
+        id="SplitScreenDemo"
+        component={SplitScreenDemo}
+        durationInFrames={90}
+        fps={30}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          presenterSide: "right" as const,
+          lines: ["AND THAT'S HOW YOU", "BUILD TRUST WITH VIEWERS."],
+          accent: "TRUST",
+        }}
+      />
+
+      <Composition
+        id="PipelineDiagramDemo"
+        component={PipelineDiagramDemo}
+        durationInFrames={150}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+
+      <Composition
+        id="GateCardsDemo"
+        component={GateCardsDemo}
+        durationInFrames={90}
+        fps={30}
+        width={1920}
+        height={1080}
       />
 
       <Composition
