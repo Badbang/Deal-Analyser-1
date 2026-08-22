@@ -7,11 +7,14 @@ import { HeroStatement } from "../components/HeroStatement";
 import { HeroText } from "../components/HeroText";
 import { KeywordPop } from "../components/KeywordPop";
 import { KineticText } from "../components/KineticText";
+import { PresenterOverlay } from "../components/PresenterOverlay";
 import { ProgressTimeline } from "../components/ProgressTimeline";
 import { SubscribeButton } from "../components/SubscribeButton";
+import { TextStrike } from "../components/TextStrike";
 import { ThoughtParticles } from "../components/ThoughtParticles";
 import { YouTubeIcon } from "../components/YouTubeIcon";
 import { scenes01to10 } from "../scenes/scenes-01-10";
+import { scenes11to20 } from "../scenes/scenes-11-20";
 import { Beat, SceneConfig } from "../scenes/types";
 import { COLORS } from "../theme";
 
@@ -41,6 +44,10 @@ const BeatRenderer: React.FC<{ beat: Beat }> = ({ beat }) => {
       return <YouTubeIcon {...beat.props} />;
     case "SubscribeButton":
       return <SubscribeButton {...beat.props} />;
+    case "TextStrike":
+      return <TextStrike {...beat.props} />;
+    case "PresenterOverlay":
+      return <PresenterOverlay {...beat.props} />;
   }
 };
 
@@ -122,4 +129,4 @@ export const Scenes: React.FC<{ scenes: SceneConfig[] }> = ({ scenes }) => {
   );
 };
 
-export const defaultScenesProps = { scenes: scenes01to10 };
+export const defaultScenesProps = { scenes: [...scenes01to10, ...scenes11to20] };

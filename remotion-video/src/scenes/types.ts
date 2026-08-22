@@ -6,8 +6,10 @@ import type { HeroStatement } from "../components/HeroStatement";
 import type { HeroText } from "../components/HeroText";
 import type { KeywordPop } from "../components/KeywordPop";
 import type { KineticText } from "../components/KineticText";
+import type { PresenterOverlay } from "../components/PresenterOverlay";
 import type { ProgressTimeline } from "../components/ProgressTimeline";
 import type { SubscribeButton } from "../components/SubscribeButton";
+import type { TextStrike } from "../components/TextStrike";
 import type { ThoughtParticles } from "../components/ThoughtParticles";
 import type { YouTubeIcon } from "../components/YouTubeIcon";
 
@@ -28,6 +30,8 @@ export type Beat = (
   | { component: "ProgressTimeline"; props: PropsOf<typeof ProgressTimeline> }
   | { component: "YouTubeIcon"; props: PropsOf<typeof YouTubeIcon> }
   | { component: "SubscribeButton"; props: PropsOf<typeof SubscribeButton> }
+  | { component: "TextStrike"; props: PropsOf<typeof TextStrike> }
+  | { component: "PresenterOverlay"; props: PropsOf<typeof PresenterOverlay> }
 ) & {
   // Frames after the scene's own start, not absolute video frames.
   delayFrames: number;
