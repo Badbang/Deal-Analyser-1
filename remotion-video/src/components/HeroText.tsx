@@ -1,4 +1,4 @@
-import { useCurrentFrame, useVideoConfig } from "remotion";
+import { interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 import { heroPunch } from "../animation";
 import { COLORS, MONTSERRAT, WEIGHT } from "../theme";
 import { AccentText } from "./AccentText";
@@ -13,17 +13,23 @@ export const HeroText: React.FC<{
   accent?: string;
   fontSize?: number;
   startDelay?: number;
-}> = ({ lines, accent, fontSize = 110, startDelay = 0 }) => {
+  // A small red vertical line beside the text, growing to 90px -- for the
+  // sparest hero beats (e.g. "WAIT.") that want one quiet accent.
+  accentLine?: boolean;
+}> = ({ lines, accent, fontSize = 110, startDelay = 0, accentLine = false }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const lineHeight = interpolate(frame, [startDelay, startDelay + 15], [0, 90], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
   return (
     <div
       style={{
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
-        textAlign: "center",
+        gap: 28,
         fontFamily: MONTSERRAT,
         fontWeight: WEIGHT.black,
         fontSize,
@@ -31,18 +37,21 @@ export const HeroText: React.FC<{
         lineHeight: 1.1,
       }}
     >
-      {lines.map((line, i) => {
-        const { opacity, scale } = heroPunch({
-          frame,
-          fps,
-          delay: startDelay + i * STAGGER_FRAMES,
-        });
-        return (
-          <div key={i} style={{ opacity, transform: `scale(${scale})` }}>
-            <AccentText text={line} accent={accent} />
-          </div>
-        );
-      })}
+      {accentLine && <div style={{ width: 4, height: lineHeight, background: COLORS.red }} />}
+      <div style={{ display: "flex", flexDirection: "column", textAlign: "center" }}>
+        {lines.map((line, i) => {
+          const { opacity, scale } = heroPunch({
+            frame,
+            fps,
+            delay: startDelay + i * STAGGER_FRAMES,
+          });
+          return (
+            <div key={i} style={{ opacity, transform: `scale(${scale})` }}>
+              <AccentText text={line} accent={accent} />
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
