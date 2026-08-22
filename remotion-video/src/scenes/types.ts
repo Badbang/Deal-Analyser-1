@@ -33,10 +33,12 @@ export type Beat = (
   delayFrames: number;
   // Omit to run to the end of the scene.
   durationInFrames?: number;
-  // "center" fills the frame; "bottom" sits in the lower third (for text
-  // that ADDS alongside another beat rather than replacing it);
-  // "corner-tr" is for small persistent icons (e.g. YouTubeIcon).
-  position?: "center" | "bottom" | "corner-tr";
+  // "center" fills the frame; "left" constrains content to the left half
+  // (use for anything over PRESENTER/TRANSPARENT footage, so it never
+  // covers the subject); "bottom" sits in the lower third (for text that
+  // ADDS alongside another beat rather than replacing it); "corner-tr" is
+  // for small persistent icons (e.g. YouTubeIcon).
+  position?: "center" | "left" | "bottom" | "corner-tr";
 };
 
 export type SceneConfig = {

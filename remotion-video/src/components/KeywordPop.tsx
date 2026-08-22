@@ -11,7 +11,8 @@ export const KeywordPop: React.FC<{
   accent?: string;
   variant?: "default" | "question";
   fontSize?: number;
-}> = ({ lines, accent, variant = "default", fontSize = 84 }) => {
+  align?: "center" | "left";
+}> = ({ lines, accent, variant = "default", fontSize = 84, align = "center" }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const { opacity, scale } = heroPunch({ frame, fps });
@@ -21,8 +22,8 @@ export const KeywordPop: React.FC<{
       style={{
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
-        textAlign: "center",
+        alignItems: align === "center" ? "center" : "flex-start",
+        textAlign: align,
         fontFamily: MONTSERRAT,
         fontWeight: WEIGHT.extraBold,
         fontSize,

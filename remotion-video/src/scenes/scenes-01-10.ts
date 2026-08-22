@@ -1,25 +1,32 @@
-import { SceneConfig, tcFrame } from "./types";
+import { SceneConfig } from "./types";
 
-// Batch 1: Scenes 01-10, per the master scene plan built from the FINAL SRT.
-// Frame numbers are derived directly from the given timecodes (30fps).
+// Batch 1: Scenes 01-10, re-synced against the FINAL (post-CapCut-edit) SRT.
+// The edit trimmed ~1.5s overall and re-chunked several subtitle cues
+// (e.g. "wait" and "in this video" are now one cue), so these frame numbers
+// are derived from the actual final cue timestamps, not the original
+// scene-plan document's timecodes. They match the frame numbers in the
+// full 49-scene master spec exactly.
+//
+// Every PRESENTER/TRANSPARENT-mode beat is positioned "left" so text and
+// graphics never sit over the subject, who occupies the center/right of
+// the footage. BLACK-mode scenes (no footage visible) stay centered.
 //
 // Simplification note: a few scenes describe a word changing color
 // *mid-display* (e.g. Scene 03's "READY" turning red partway through the
 // line staying on screen). Rather than build a one-off mid-beat recolor
 // mechanism, those are implemented as the line entering already accented.
-// Flag if frame-exact recoloring matters and I'll add it as a real feature.
 
-const s1Start = tcFrame("00:00.033");
-const s2Start = tcFrame("00:08.500");
-const s3Start = tcFrame("00:09.700");
-const s4Start = tcFrame("00:18.833");
-const s5Start = tcFrame("00:22.333");
-const s6Start = tcFrame("00:30.533");
-const s7Start = tcFrame("00:40.100");
-const s8Start = tcFrame("00:52.900");
-const s9Start = tcFrame("01:04.500");
-const s10Start = tcFrame("01:18.300");
-const s10End = tcFrame("01:34.933");
+const s1Start = 2; // 0.066s
+const s2Start = 256; // 8.533s
+const s3Start = 285; // 9.5s
+const s4Start = 558; // 18.6s
+const s5Start = 670; // 22.333s
+const s6Start = 921; // 30.7s
+const s7Start = 1200; // 40.0s
+const s8Start = 1584; // 52.8s
+const s9Start = 1932; // 64.4s
+const s10Start = 2348; // 78.266s
+const s10End = 2794; // 93.133s
 
 export const scenes01to10: SceneConfig[] = [
   {
@@ -33,31 +40,35 @@ export const scenes01to10: SceneConfig[] = [
       {
         component: "KineticText",
         delayFrames: 0,
-        durationInFrames: tcFrame("00:01.933") - s1Start,
-        props: { lines: ["STARTED A", "YOUTUBE CHANNEL?"], accent: "YOUTUBE" },
+        durationInFrames: 59 - 0, // -> 1.966s
+        position: "left",
+        props: { lines: ["STARTED A", "YOUTUBE CHANNEL?"], accent: "YOUTUBE", align: "left" },
       },
       {
         component: "YouTubeIcon",
         delayFrames: 0,
         position: "corner-tr",
-        props: { size: 70 },
+        props: { size: 150 },
       },
       {
         component: "KineticText",
-        delayFrames: tcFrame("00:01.933") - s1Start,
-        durationInFrames: tcFrame("00:04.300") - tcFrame("00:01.933"),
-        props: { lines: ["THINKING OF", "STARTING ONE?"] },
+        delayFrames: 59,
+        durationInFrames: 131 - 59, // -> 4.366s
+        position: "left",
+        props: { lines: ["THINKING OF", "STARTING ONE?"], align: "left" },
       },
       {
         component: "KeywordPop",
-        delayFrames: tcFrame("00:04.300") - s1Start,
-        durationInFrames: tcFrame("00:05.933") - tcFrame("00:04.300"),
-        props: { lines: ["EXCITED"] },
+        delayFrames: 131,
+        durationInFrames: 180 - 131, // -> 6.0s
+        position: "left",
+        props: { lines: ["EXCITED"], align: "left" },
       },
       {
         component: "KineticText",
-        delayFrames: tcFrame("00:05.933") - s1Start,
-        props: { lines: ["EXCITED TO SHARE?"], accent: "EXCITED" },
+        delayFrames: 180,
+        position: "left",
+        props: { lines: ["EXCITED TO SHARE?"], accent: "EXCITED", align: "left" },
       },
     ],
   },
@@ -86,20 +97,23 @@ export const scenes01to10: SceneConfig[] = [
     beats: [
       {
         component: "KineticText",
-        delayFrames: tcFrame("00:11.033") - s3Start,
-        durationInFrames: tcFrame("00:11.600") - tcFrame("00:11.033"),
-        props: { lines: ["IN THIS VIDEO"], fontSize: 48 },
+        delayFrames: 0,
+        durationInFrames: 330 - s3Start, // -> 11.0s
+        position: "left",
+        props: { lines: ["IN THIS VIDEO"], fontSize: 48, align: "left" },
       },
       {
         component: "KineticText",
-        delayFrames: tcFrame("00:11.600") - s3Start,
-        durationInFrames: tcFrame("00:16.000") - tcFrame("00:11.600"),
-        props: { lines: ["KEEP IT", "QUIET."], fontSize: 96 },
+        delayFrames: 330 - s3Start,
+        durationInFrames: 522 - 330, // -> 17.4s
+        position: "left",
+        props: { lines: ["KEEP IT", "QUIET."], fontSize: 96, align: "left" },
       },
       {
         component: "KineticText",
-        delayFrames: tcFrame("00:16.000") - s3Start,
-        props: { lines: ["UNTIL YOU'RE", "READY"], accent: "READY", fontSize: 56 },
+        delayFrames: 522 - s3Start,
+        position: "left",
+        props: { lines: ["UNTIL YOU'RE", "READY"], accent: "READY", fontSize: 56, align: "left" },
       },
     ],
   },
@@ -114,12 +128,12 @@ export const scenes01to10: SceneConfig[] = [
       {
         component: "KineticText",
         delayFrames: 0,
-        durationInFrames: tcFrame("00:19.500") - s4Start,
+        durationInFrames: 588 - s4Start, // -> 19.6s
         props: { lines: ["THEY SEE YOUR"], fontSize: 64 },
       },
       {
         component: "Comparison",
-        delayFrames: tcFrame("00:19.500") - s4Start,
+        delayFrames: 588 - s4Start,
         props: { leftText: "PAST", rightText: "FUTURE", style: "clash", winner: "right" },
       },
     ],
@@ -135,12 +149,14 @@ export const scenes01to10: SceneConfig[] = [
         component: "KineticText",
         delayFrames: 0,
         durationInFrames: 100,
-        props: { lines: ["THEY REMEMBER"], fontSize: 48 },
+        position: "left",
+        props: { lines: ["THEY REMEMBER"], fontSize: 48, align: "left" },
       },
       {
         component: "KineticText",
         delayFrames: 100,
-        props: { lines: ["YOU'RE", "CHANGING"], accent: "CHANGING", fontSize: 88 },
+        position: "left",
+        props: { lines: ["YOU'RE", "CHANGING"], accent: "CHANGING", fontSize: 88, align: "left" },
       },
     ],
   },
@@ -154,6 +170,7 @@ export const scenes01to10: SceneConfig[] = [
       {
         component: "FlowDiagram",
         delayFrames: 0,
+        position: "left",
         props: {
           nodes: ["PAST", "TODAY", "YOUTUBE"],
           accentNode: "YOUTUBE",
@@ -177,6 +194,7 @@ export const scenes01to10: SceneConfig[] = [
       {
         component: "ThoughtParticles",
         delayFrames: 0,
+        position: "left",
         props: {
           centerText: "THEY'RE TRYING TO PROTECT YOU.",
           particles: ["PROTECTION", "CONCERN", "CAUTION"],
@@ -197,12 +215,14 @@ export const scenes01to10: SceneConfig[] = [
         component: "Comparison",
         delayFrames: 0,
         durationInFrames: 200,
+        position: "left",
         props: { leftText: "9–5", rightText: "YOUTUBE", style: "meet" },
       },
       {
         component: "KineticText",
         delayFrames: 200,
-        props: { lines: ["YOU DON'T", "HAVE TO QUIT."], fontSize: 72 },
+        position: "left",
+        props: { lines: ["YOU DON'T", "HAVE TO QUIT."], fontSize: 72, align: "left" },
       },
     ],
   },
@@ -237,11 +257,12 @@ export const scenes01to10: SceneConfig[] = [
       {
         component: "KeywordPop",
         delayFrames: 0,
-        props: { lines: ["WHEN", "SHOULD YOU SHARE?"], accent: "WHEN" },
+        position: "left",
+        props: { lines: ["WHEN", "SHOULD YOU SHARE?"], accent: "WHEN", align: "left" },
       },
       {
         component: "KineticText",
-        delayFrames: tcFrame("01:30.933") - s10Start,
+        delayFrames: 273, // 87.366s -> "when should you tell your family and friends"
         position: "bottom",
         props: { lines: ["TIMING MATTERS"], fontSize: 44 },
       },
