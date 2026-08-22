@@ -16,6 +16,7 @@ import {
 } from "./compositions/MasterVideo";
 import { CoffeeFloat } from "./compositions/CoffeeFloat";
 import { ReasonCardDemo, reasonCardDemoSchema } from "./compositions/ReasonCardDemo";
+import { Scenes, calculateScenesMetadata, defaultScenesProps } from "./compositions/Scenes";
 import exampleCaptions from "./data/example-captions.json";
 
 // Each <Composition> is an entry in the sidebar!
@@ -76,6 +77,19 @@ export const RemotionRoot: React.FC = () => {
           outroSubtitle: "Subscribe for more like this",
         }}
         calculateMetadata={calculateMasterVideoMetadata}
+      />
+
+      <Composition
+        id="Scenes"
+        component={Scenes}
+        // Placeholder value: calculateMetadata below sets the real duration
+        // from the last scene's start + duration.
+        durationInFrames={2848}
+        fps={30}
+        width={1920}
+        height={1080}
+        defaultProps={defaultScenesProps}
+        calculateMetadata={calculateScenesMetadata}
       />
 
       <Composition
