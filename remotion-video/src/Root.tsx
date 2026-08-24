@@ -9,6 +9,7 @@ import {
 } from "./compositions/CaptionOverlay";
 import { Intro, introSchema } from "./compositions/Intro";
 import { CoffeeFloat } from "./compositions/CoffeeFloat";
+import { AnimatedList, animatedListSchema } from "./compositions/AnimatedList";
 import exampleCaptions from "./data/example-captions.json";
 
 // Each <Composition> is an entry in the sidebar!
@@ -40,6 +41,24 @@ export const RemotionRoot: React.FC = () => {
         fps={30}
         width={1920}
         height={1080}
+      />
+
+      <Composition
+        id="AnimatedList"
+        component={AnimatedList}
+        durationInFrames={90}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={animatedListSchema}
+        defaultProps={{
+          backgroundColor: "#141412",
+          items: [
+            { name: "Item One", color: "#3b82f6" },
+            { name: "Item Two", color: "#60a5fa" },
+            { name: "Item Three", color: "#93c5fd" },
+          ],
+        }}
       />
 
       <Composition
