@@ -10,6 +10,7 @@ import {
 import { Intro, introSchema } from "./compositions/Intro";
 import { CoffeeFloat } from "./compositions/CoffeeFloat";
 import { AnimatedList, animatedListSchema } from "./compositions/AnimatedList";
+import { PunchInText, punchInTextSchema } from "./compositions/PunchInText";
 import exampleCaptions from "./data/example-captions.json";
 
 // Each <Composition> is an entry in the sidebar!
@@ -58,6 +59,24 @@ export const RemotionRoot: React.FC = () => {
             { name: "Item Two", color: "#60a5fa" },
             { name: "Item Three", color: "#93c5fd" },
           ],
+        }}
+      />
+
+      <Composition
+        // Scene 1: "TERRIFIED" punches in white, hard-cuts to red, shakes, then holds.
+        // At the 60th frame (2.0s) this composition ends for a hard cut to footage.
+        id="Scene1Terrified"
+        component={PunchInText}
+        durationInFrames={60}
+        fps={30}
+        width={1920}
+        height={1080}
+        schema={punchInTextSchema}
+        defaultProps={{
+          text: "TERRIFIED",
+          backgroundColor: "#0A0A0A",
+          startColor: "#FFFFFF",
+          impactColor: "#FF0000",
         }}
       />
 
